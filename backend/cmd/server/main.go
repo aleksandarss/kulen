@@ -36,6 +36,10 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "API is up and running"})
 	})
 
+	// auth
+	router.POST("/login", handlers.Login)
+	router.POST("/refresh", handlers.RefreshToken)
+
 	// recipes
 	router.GET("/recipes", handlers.GetAllRecipes(db.DB))
 	router.GET("/recipes/:id", handlers.GetRecipeByID(db.DB))
