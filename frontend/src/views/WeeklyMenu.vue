@@ -30,6 +30,12 @@
       @close="modalOpen = false"
       @updated="loadMenu"
     />
+
+    <LoginModal
+      :show="showLogin"
+      @close="showLogin = false"
+      @logged-in="handleLogin"
+    />
   </div>
 </template>
 
@@ -39,6 +45,7 @@ import { useRouter } from 'vue-router'
 import MenuGrid from '../components/MenuGrid.vue'
 import MenuDayMobile from '../components/MenuDayMobile.vue'
 import MenuSelectorModal from '../components/MenuSelectorModal.vue'
+import LoginModal from '../components/LoginModal.vue'
 import api from '../api'
 
 const entries = ref<any[]>([])
@@ -47,6 +54,7 @@ const isMobile = ref(window.innerWidth < 768)
 const modalOpen = ref(false)
 const selectedDay = ref('')
 const selectedMeal = ref('')
+const showLogin = ref(false)
 const router = useRouter()
 
 function openSelector(day: string, meal: string) {
@@ -58,22 +66,23 @@ function openSelector(day: string, meal: string) {
 async function loadMenu() {
   const token = localStorage.getItem('token')
   if (!token) {
-    entries.value = [] // or you can just return
+    showLogin.value = true
     return
   }
 
   try {
-    const res = await api.get('/menu')
+    const res = await api.get('/menu', { headers: { Authorization: `Bearer ${token}` } })
     entries.value = res.data
   } catch (err) {
     console.error('Failed to load menu:', err)
   }
 }
 
-
 async function removeEntry(entryId: number) {
   try {
-    await api.delete(`/menu/${entryId}`)
+    const token = localStorage.getItem('token')
+    if (!token) return
+    await api.delete(`/menu/${entryId}`, { headers: { Authorization: `Bearer ${token}` } })
     await loadMenu()
   } catch (err) {
     console.error('Failed to remove entry:', err)
@@ -84,9 +93,14 @@ function navigateToRecipe(recipeId: number) {
   router.push(`/recipes/${recipeId}`)
 }
 
+function handleLogin() {
+  showLogin.value = false
+  loadMenu()
+}
+
 onMounted(loadMenu)
 </script>
 
 <style scoped>
-/****** You can style remove buttons or recipe links here if needed *******/
+/****** You can style remove buttons or recipe links here if needed  *******/
 </style>
