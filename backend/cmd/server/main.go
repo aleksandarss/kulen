@@ -23,14 +23,21 @@ func main() {
 	// Init DB
 	db.Init()
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery(), gin.Logger())
+	router.RedirectTrailingSlash = false
 
+	// cors setup
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
+
+	router.OPTIONS("/*path", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 
 	// Simple health check route
 	router.GET("/", func(c *gin.Context) {
@@ -52,9 +59,11 @@ func main() {
 	menu := router.Group("/menu")
 	menu.Use(middleware.AuthRequired())
 	{
-		menu.GET("/menu", handlers.GetMenuEntries(db.DB))
-		menu.POST("menu", handlers.CreateMenuEntry(db.DB))
-		menu.DELETE("/menu/:id", handlers.DeleteMenuEntry(db.DB))
+		menu.GET("", handlers.GetMenuEntries(db.DB))  // handles /menu
+		menu.GET("/", handlers.GetMenuEntries(db.DB)) // handles /menu/
+		menu.POST("", handlers.CreateMenuEntry(db.DB))
+		menu.POST("/", handlers.CreateMenuEntry(db.DB))
+		menu.DELETE("/:id", handlers.DeleteMenuEntry(db.DB))
 	}
 
 	// shopping list
