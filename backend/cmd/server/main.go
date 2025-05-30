@@ -48,9 +48,13 @@ func main() {
 	router.DELETE("/recipes/:id", handlers.DeleteRecipe(db.DB))
 
 	// menu
-	router.GET("/menu", handlers.GetMenuEntries(db.DB))
-	router.POST("/menu", handlers.CreateMenuEntry(db.DB))
-	router.DELETE("/menu/:id", handlers.DeleteMenuEntry(db.DB))
+	menu := router.Group("/menu")
+	menu.Use(handlers.AuthMiddleware())
+	{
+		menu.GET("/menu", handlers.GetMenuEntries(db.DB))
+		menu.POST("menu", handlers.CreateMenuEntry(db.DB))
+		menu.DELETE("/menu/:id", handlers.DeleteMenuEntry(db.DB))
+	}
 
 	// shopping list
 	router.GET("/shopping-list", handlers.GetShoppingList(db.DB))
