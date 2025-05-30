@@ -100,7 +100,7 @@ func CreateRecipe(db *gorm.DB) gin.HandlerFunc {
 		recipe := models.Recipe{
 			Title:        input.Title,
 			Instructions: input.Instructions,
-			CreatedByID:  input.CreatedByID,
+			CreatedByID:  &input.CreatedByID,
 		}
 		if err := db.Create(&recipe).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create recipe"})
