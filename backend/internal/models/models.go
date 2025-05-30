@@ -4,7 +4,7 @@ type Recipe struct {
 	ID           uint   `gorm:"primaryKey"`
 	Title        string `gorm:"not null"`
 	Instructions string `gorm:"type:text"`
-	CreatedByID  uint   `gorm:"not null"`
+	CreatedByID  *uint  // Optional: who created it
 	Ingredients  []RecipeIngredient
 	Tags         []RecipeTag
 	Steps        []RecipeStep `gorm:"constraint:OnDelete:CASCADE;"`
@@ -32,7 +32,6 @@ type RecipeIngredient struct {
 	Amount       string
 	Unit         string
 
-	// Associations (optional but helpful)
 	Recipe     Recipe
 	Ingredient Ingredient
 }
@@ -59,10 +58,12 @@ type MenuEntry struct {
 	MealType string `gorm:"not null;uniqueIndex:idx_user_day_meal"` // e.g., breakfast, lunch, dinner
 
 	Recipe Recipe
+	User   User `gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type User struct {
-	ID       uint   `gorm:"primaryKey"`
-	Email    string `gorm:"uniqueIndex;not null"`
-	Password string `gorm:"not null"`
+	ID           uint   `gorm:"primaryKey"`
+	Email        string `gorm:"uniqueIndex;not null"`
+	Password     string `gorm:"not null"`
+	RefreshToken string `gorm:"type:text"` // stores latest refresh token
 }

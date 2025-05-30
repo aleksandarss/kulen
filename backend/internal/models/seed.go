@@ -18,19 +18,20 @@ func Seed(db *gorm.DB) {
 	// Create test user
 	hashed, _ := bcrypt.GenerateFromPassword([]byte("secret"), bcrypt.DefaultCost)
 	user := User{
-		Email:    "test@example.com",
-		Password: string(hashed),
+		Email:        "test@example.com",
+		Password:     string(hashed),
+		RefreshToken: "", // empty at seed time
 	}
 	db.Create(&user)
 
-	// FirstOrCreate Ingredients
+	// Ingredients
 	salt := Ingredient{Name: "Salt"}
 	db.FirstOrCreate(&salt, salt)
 
 	flour := Ingredient{Name: "Flour"}
 	db.FirstOrCreate(&flour, flour)
 
-	// FirstOrCreate Tags
+	// Tags
 	vegan := Tag{Name: "Vegan"}
 	db.FirstOrCreate(&vegan, vegan)
 
@@ -41,7 +42,7 @@ func Seed(db *gorm.DB) {
 	recipe := Recipe{
 		Title:        "Simple Pancakes",
 		Instructions: "Mix ingredients and cook in pan.",
-		CreatedByID:  user.ID,
+		CreatedByID:  &user.ID,
 	}
 	db.Create(&recipe)
 
