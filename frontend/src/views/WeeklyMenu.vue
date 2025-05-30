@@ -56,13 +56,20 @@ function openSelector(day: string, meal: string) {
 }
 
 async function loadMenu() {
+  const token = localStorage.getItem('token')
+  if (!token) {
+    entries.value = [] // or you can just return
+    return
+  }
+
   try {
-    const res = await api.get('/menu', { params: { user_id: 1 } })
+    const res = await api.get('/menu')
     entries.value = res.data
   } catch (err) {
     console.error('Failed to load menu:', err)
   }
 }
+
 
 async function removeEntry(entryId: number) {
   try {
