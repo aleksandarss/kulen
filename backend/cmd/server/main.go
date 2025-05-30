@@ -8,6 +8,7 @@ import (
 
 	"backend/internal/db"
 	"backend/internal/handlers"
+	"backend/internal/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -49,7 +50,7 @@ func main() {
 
 	// menu
 	menu := router.Group("/menu")
-	menu.Use(handlers.AuthMiddleware())
+	menu.Use(middleware.AuthRequired())
 	{
 		menu.GET("/menu", handlers.GetMenuEntries(db.DB))
 		menu.POST("menu", handlers.CreateMenuEntry(db.DB))
