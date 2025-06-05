@@ -1,14 +1,18 @@
 ---
 # values.yaml
 frontend:
+  imagePullSecrets:
+    - name: ghcr-secret
   image:
-    repository: your-docker-repo/frontend
+    repository: ghcr.io/aleksandarss/kulen/frontend
     tag: latest
   replicaCount: 1
 
 backend:
+  imagePullSecrets:
+    - name: ghcr-secret
   image:
-    repository: your-docker-repo/backend
+    repository: ghcr.io/aleksandarss/kulen/backend
     tag: latest
   replicaCount: 1
   env:
@@ -35,11 +39,11 @@ database:
 
 ingress:
   enabled: true
-  host: your.domain.com
+  host: kulen.mithrandir.calic.cloud
   tlsSecret: recipe-tls
   className: "nginx"
   hosts:
-    - host: kulen.local
+    - host: kulen.mithrandir.calic.cloud
       paths:
         - path: /
           pathType: Prefix
