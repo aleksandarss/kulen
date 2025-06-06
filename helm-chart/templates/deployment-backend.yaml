@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: {{ include "recipe-app.fullname" . }}-backend
 spec:
   replicas: 1
   selector:
@@ -14,20 +14,20 @@ spec:
       labels:
         app: backend
     spec:
+      {{- if .Values.backend.imagePullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.backend.imagePullSecrets | default "ghcr-secret" }}
+        {{- toYaml .Values.backend.imagePullSecrets | nindent 8 }}
+      {{- else }}
+      imagePullSecrets:
+        - name: ghcr-secret
+      {{- end }}
+
       containers:
         - name: backend
-          image: {{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag }}
+          image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
           ports:
             - containerPort: 8080
-          env:
-            - name: DB_HOST
-              value: postgres
-            - name: DB_USER
-              value: {{ .Values.postgres.user }}
-            - name: DB_PASSWORD
-              value: {{ .Values.postgres.password }}
-            - name: DB_NAME
-              value: {{ .Values.postgres.db }}
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.backend.env }}
+          env: {{ toYaml .Values.backend.env | nindent 12 }}
+          {{- end }}
+          resources: {{ toYaml .Values.backend.resources | nindent 12 }}
