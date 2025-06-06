@@ -7,6 +7,9 @@ frontend:
     repository: ghcr.io/aleksandarss/kulen/frontend
     tag: latest
   replicaCount: 1
+  env:
+    - name: VITE_API_URL
+      value: http://backend:8080
 
 backend:
   imagePullSecrets:
@@ -16,29 +19,16 @@ backend:
     tag: latest
   replicaCount: 1
   env:
-    - name: DB_HOST
-      value: kulen-postgres
-    - name: DB_USER
-      value: user
-    - name: DB_PASSWORD
-      value: password
-    - name: DB_NAME
-      value: kulen
-
-database:
-  enabled: true
-  image:
-    repository: postgres
-    tag: "15"
-  storage:
-    size: 1Gi
-  credentials:
-    user: user
-    password: password
-    database: kulen
+    - name: DATABASE_URL
+      value: postgres://user:password@postgres:5432/recipeapp
+    - name: PORT
+      value: "8080"
+    - name: JWT_SECRET
+      value: supersecret
 
 ingress:
   enabled: true
+  issuerName: letsencrypt-http
   host: kulen.mithrandir.calic.cloud
   tlsSecret: recipe-tls
   className: "nginx"
@@ -48,6 +38,11 @@ ingress:
         - path: /
           pathType: Prefix
 
-postgresql:
-  storageClass: standard
+postgres:
+  enabled: true
+  image: postgres:15
+  user: user
+  password: password
+  db: recipeapp
   storage: 1Gi
+  storageClass: "standard"

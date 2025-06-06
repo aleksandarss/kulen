@@ -5,7 +5,9 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.issuerName }}
 spec:
+  ingressClassName: {{ .Values.ingress.className }}
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
@@ -18,6 +20,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "recipe-app.fullname" . }}-frontend
+                name: frontend
                 port:
                   number: 80
