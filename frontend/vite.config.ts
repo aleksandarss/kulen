@@ -16,9 +16,12 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,     // 👈 allows access from host machine
+    host: true,
     watch: {
-      usePolling: true, // 👈 fix for some filesystems (especially Docker on Linux)
+      usePolling: true,
     },
+    allowedHosts: [
+      "kulen.mithrandir.calic.cloud"
+    ]
   },
 })
