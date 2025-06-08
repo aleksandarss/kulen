@@ -29,7 +29,7 @@ func main() {
 
 	// cors setup
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, //[]string{"http://localhost:5173"},
+		AllowOrigins:     []string{"http://localhost:5173", "https://kulen.mithrandir.calic.cloud"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,

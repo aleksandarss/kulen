@@ -58,7 +58,16 @@ type MenuEntry struct {
 	MealType string `gorm:"not null;uniqueIndex:idx_user_day_meal"` // e.g., breakfast, lunch, dinner
 
 	Recipe Recipe
-	User   User `gorm:"constraint:OnDelete:CASCADE;"`
+	User   User             `gorm:"constraint:OnDelete:CASCADE;"`
+	Extras []MenuEntryExtra `gorm:"constraint:OnDelete:CASCADE;"`
+}
+
+type MenuEntryExtra struct {
+	ID          uint   `gorm:"primaryKey"`
+	MenuEntryID uint   `gorm:"not null;index"`
+	Name        string `gorm:"not null"`
+
+	MenuEntry MenuEntry `gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type User struct {
