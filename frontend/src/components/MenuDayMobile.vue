@@ -19,6 +19,20 @@
         <div class="text-md text-primary font-medium">
           {{ getEntry(currentDay, meal)?.Recipe?.Title || 'Tap to add' }}
         </div>
+        <ul v-if="getEntry(currentDay, meal)?.Extras?.length" class="text-xs text-muted ml-2">
+          <li v-for="extra in getEntry(currentDay, meal).Extras" :key="extra.ID">- {{ extra.Name }}</li>
+        </ul>
+        <div v-if="getEntry(currentDay, meal)" class="mt-1 text-xs">
+          <button @click.stop="() => onAddExtra(getEntry(currentDay, meal).ID)" class="text-accent mr-2">+ Extra</button>
+          <button
+            v-for="extra in getEntry(currentDay, meal).Extras"
+            :key="extra.ID"
+            @click.stop="() => onRemoveExtra(extra.ID)"
+            class="text-red-500 mr-1"
+          >
+            ❌ {{ extra.Name }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -32,6 +46,8 @@ const props = defineProps<{
   currentDayIndex: number
   onDayChange: (newIndex: number) => void
   onSelect: (day: string, meal: string) => void
+  onAddExtra: (entryId: number) => void
+  onRemoveExtra: (extraId: number) => void
 }>()
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -48,14 +64,10 @@ function capitalize(str: string) {
 }
 
 function prevDay() {
-  if (props.currentDayIndex > 0) {
-    props.onDayChange(props.currentDayIndex - 1)
-  }
+  if (props.currentDayIndex > 0) props.onDayChange(props.currentDayIndex - 1)
 }
 
 function nextDay() {
-  if (props.currentDayIndex < days.length - 1) {
-    props.onDayChange(props.currentDayIndex + 1)
-  }
+  if (props.currentDayIndex < days.length - 1) props.onDayChange(props.currentDayIndex + 1)
 }
 </script>

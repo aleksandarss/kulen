@@ -21,8 +21,9 @@ func GetMenuEntries(db *gorm.DB) gin.HandlerFunc {
 
 		var entries []models.MenuEntry
 		if err := db.
-			Where("user_id = ?", userID).
 			Preload("Recipe").
+			Preload("Extras").
+			Where("user_id = ?", userID).
 			Find(&entries).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch menu entries"})
 			return
@@ -42,9 +43,10 @@ func CreateMenuEntry(db *gorm.DB) gin.HandlerFunc {
 		userID := userIDVal.(uint)
 
 		var input struct {
-			RecipeID uint   `json:"recipe_id"`
-			Day      string `json:"day"`
-			MealType string `json:"meal_type"`
+			RecipeID uint     `json:"recipe_id"`
+			Day      string   `json:"day"`
+			MealType string   `json:"meal_type"`
+			Extras   []string `json:"extras"`
 		}
 		if err := c.ShouldBindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input"})
@@ -62,6 +64,15 @@ func CreateMenuEntry(db *gorm.DB) gin.HandlerFunc {
 			MealType: input.MealType,
 		}
 		db.Create(&entry)
+
+		for _, name := range input.Extras {
+			extra := models.MenuEntryExtra{
+				MenuEntryID: entry.ID,
+				Name:        name,
+			}
+			db.Create(&extra)
+		}
+
 		c.JSON(http.StatusCreated, entry)
 	}
 }

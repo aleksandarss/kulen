@@ -1,3 +1,4 @@
+<!-- WeeklyMenu.vue -->
 <template>
   <div class="p-4 max-w-5xl mx-auto">
     <h1 class="text-xl font-bold text-primary mb-6">Weekly Menu</h1>
@@ -11,6 +12,8 @@
       :onSelect="openSelector"
       :onRemove="removeEntry"
       :onNavigate="navigateToRecipe"
+      :onAddExtra="openExtrasModal"
+      :onRemoveExtra="removeExtraFromModal"
     />
 
     <!-- Desktop -->
@@ -18,8 +21,8 @@
       v-else
       :entries="entries"
       :onSelect="openSelector"
-      :onRemove="removeEntry"
-      :onNavigate="navigateToRecipe"
+      :onExtras="openExtrasModal"
+      :onRemoveExtra="removeExtraFromModal"
     />
 
     <MenuSelectorModal
@@ -28,6 +31,13 @@
       :meal="selectedMeal"
       :entries="entries"
       @close="modalOpen = false"
+      @updated="loadMenu"
+    />
+
+    <ExtrasModal
+      :show="extrasModalOpen"
+      :entry="selectedEntry"
+      @close="extrasModalOpen = false"
       @updated="loadMenu"
     />
 
@@ -45,6 +55,7 @@ import { useRouter } from 'vue-router'
 import MenuGrid from '../components/MenuGrid.vue'
 import MenuDayMobile from '../components/MenuDayMobile.vue'
 import MenuSelectorModal from '../components/MenuSelectorModal.vue'
+import ExtrasModal from '../components/ExtrasModal.vue'
 import LoginModal from '../components/LoginModal.vue'
 import api from '../api'
 
@@ -54,13 +65,21 @@ const isMobile = ref(window.innerWidth < 768)
 const modalOpen = ref(false)
 const selectedDay = ref('')
 const selectedMeal = ref('')
+const selectedEntryId = ref<number | null>(null)
+const extrasModalOpen = ref(false)
 const showLogin = ref(false)
 const router = useRouter()
+const selectedEntry = ref<any | null>(null)
 
 function openSelector(day: string, meal: string) {
   selectedDay.value = day
   selectedMeal.value = meal
   modalOpen.value = true
+}
+
+function openExtrasModal(entry: any) {
+  selectedEntry.value = entry
+  extrasModalOpen.value = true
 }
 
 async function loadMenu() {
@@ -89,6 +108,19 @@ async function removeEntry(entryId: number) {
   }
 }
 
+async function removeExtraFromModal(extraId: number) {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token || !selectedEntryId.value) return
+    await api.delete(`/menu/${selectedEntryId.value}/extras/${extraId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    await loadMenu()
+  } catch (err) {
+    console.error('Failed to remove extra:', err)
+  }
+}
+
 function navigateToRecipe(recipeId: number) {
   router.push(`/recipes/${recipeId}`)
 }
@@ -102,5 +134,5 @@ onMounted(loadMenu)
 </script>
 
 <style scoped>
-/****** You can style remove buttons or recipe links here if needed  *******/
+/****** You can style remove buttons or recipe links here if needed *******/
 </style>

@@ -38,6 +38,7 @@ func Init() {
 		&models.RecipeTag{},
 		&models.MenuEntry{},
 		&models.RecipeStep{},
+		&models.MenuEntryExtra{},
 	)
 	if err != nil {
 		log.Fatalf("migration failed: %v", err)
