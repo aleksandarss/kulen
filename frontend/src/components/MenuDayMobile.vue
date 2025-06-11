@@ -33,6 +33,15 @@
             ❌ {{ extra.Name }}
           </button>
         </div>
+        <div v-if="getEntry(currentDay, meal)?.Recipe" class="mt-2">
+          <router-link
+            :to="`/recipes/${getEntry(currentDay, meal).Recipe.ID}`"
+            class="inline-block px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+            @click.stop
+          >
+            🔍 View Recipe
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
