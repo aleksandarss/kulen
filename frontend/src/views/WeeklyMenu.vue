@@ -92,8 +92,14 @@ async function loadMenu() {
   try {
     const res = await api.get('/menu', { headers: { Authorization: `Bearer ${token}` } })
     entries.value = res.data
-  } catch (err) {
-    console.error('Failed to load menu:', err)
+  } catch (err: any) {
+    if (err.response?.status === 401) {
+      // Session expired or invalid
+      localStorage.removeItem('token')
+      showLogin.value = true
+    } else {
+      console.error('Failed to load menu:', err)
+    }
   }
 }
 

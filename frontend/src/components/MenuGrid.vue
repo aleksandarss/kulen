@@ -1,38 +1,53 @@
 <template>
   <div class="overflow-x-auto">
-    <table class="min-w-full border text-sm text-left rounded-xl overflow-hidden shadow">
+    <table class="min-w-full border text-base text-left rounded-xl overflow-hidden shadow-lg">
       <thead>
         <tr>
-          <th class="px-3 py-2 bg-muted text-secondary border-r">Meal</th>
-          <th v-for="day in days" :key="day" class="px-3 py-2 bg-muted text-secondary border-r">
+          <th class="px-4 py-3 bg-muted text-secondary border-r text-lg">Meal</th>
+          <th v-for="day in days" :key="day" class="px-4 py-3 bg-muted text-secondary border-r text-lg">
             {{ day }}
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="meal in meals" :key="meal" class="border-t">
-          <td class="px-3 py-2 font-semibold text-primary border-r">
+          <td class="px-4 py-3 font-semibold text-primary border-r bg-muted/10">
             {{ capitalize(meal) }}
           </td>
-          <td v-for="day in days" :key="day + meal" class="px-3 py-2 border-r">
-            <div class="cursor-pointer hover:bg-accent/10" @click="() => handleSelect(day, meal)">
-              <div class="text-sm text-secondary">
+          <td v-for="day in days" :key="day + meal" class="px-4 py-3 border-r align-top">
+            <div class="cursor-pointer hover:bg-accent/20 p-2 rounded transition-colors" @click="() => handleSelect(day, meal)">
+              <div class="text-base font-medium text-secondary">
                 {{ getEntry(day, meal)?.Recipe?.Title || 'Add' }}
               </div>
-              <ul v-if="getEntry(day, meal)?.Extras?.length" class="pl-2 text-xs text-muted">
-                <li v-for="extra in getEntry(day, meal).Extras" :key="extra.ID">- {{ extra.Name }}</li>
+              <ul v-if="getEntry(day, meal)?.Extras?.length" class="pl-3 text-sm text-muted mt-1 list-disc">
+                <li v-for="extra in getEntry(day, meal).Extras" :key="extra.ID">{{ extra.Name }}</li>
               </ul>
             </div>
-            <div v-if="getEntry(day, meal)" class="mt-1">
-              <button @click.stop="() => handleExtras(getEntry(day, meal))" class="text-xs text-accent mr-2">+ Extra</button>
+
+            <!-- extras buttons -->
+            <div v-if="getEntry(day, meal)" class="mt-2 flex flex-wrap gap-2">
+              <button @click.stop="() => handleExtras(getEntry(day, meal))" class="text-sm text-accent underline">
+                + Extra
+              </button>
               <button
                 v-for="extra in getEntry(day, meal).Extras"
                 :key="extra.ID"
                 @click.stop="() => handleRemoveExtra(extra.ID)"
-                class="text-xs text-red-500 mr-1"
+                class="text-sm text-red-500 hover:underline"
               >
                 ❌ {{ extra.Name }}
               </button>
+            </div>
+
+            <!-- view recipe link -->
+            <div v-if="getEntry(day, meal)?.Recipe" class="mt-2">
+              <router-link
+                :to="`/recipes/${getEntry(day, meal).Recipe.ID}`"
+                class="inline-block px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors"
+                @click.stop
+              >
+                🔍 View Recipe
+              </router-link>
             </div>
           </td>
         </tr>
@@ -40,6 +55,7 @@
     </table>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
