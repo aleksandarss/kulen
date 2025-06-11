@@ -20,10 +20,8 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
-    /*
     allowedHosts: [
       "kulen.mithrandir.calic.cloud"
     ]
-    */
   },
 })
