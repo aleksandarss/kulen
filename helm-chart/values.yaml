@@ -9,7 +9,7 @@ frontend:
   replicaCount: 1
   env:
     - name: VITE_API_URL
-      value: http://backend:8080
+      value: /api
 
 backend:
   imagePullSecrets:
