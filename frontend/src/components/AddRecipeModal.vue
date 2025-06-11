@@ -5,7 +5,10 @@
       class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
       @click.self="emit('close')"
     >
-      <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
+      <div
+        class="bg-white w-full max-w-lg max-h-screen overflow-y-auto p-6 rounded-lg shadow-lg relative"
+        style="scrollbar-gutter: stable"
+      >
         <h2 class="text-xl font-semibold text-primary mb-4">Add New Recipe</h2>
 
         <form @submit.prevent="submit">
