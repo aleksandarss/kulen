@@ -22,8 +22,8 @@ spec:
       containers:
         - name: frontend
           image: {{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}
-          {{- if .Values.backend.env }}
-          env: {{ toYaml .Values.backend.env | nindent 12 }}
+          {{- if .Values.frontend.env }}
+          env: {{ toYaml .Values.frontend.env | nindent 12 }}
           {{- end }}
           ports:
             - containerPort: 5173
