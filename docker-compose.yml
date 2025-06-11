@@ -12,7 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  kulen:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -29,15 +29,13 @@ services:
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "8081:80"  # Nginx serves on port 80 inside container
     environment:
-      - VITE_API_URL=http://localhost:8080
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    working_dir: /app
-    command: npm run dev -- --host
+      - VITE_API_URL=http://backend:8080
+    depends_on:
+      - backend
 
 volumes:
   pgdata:
