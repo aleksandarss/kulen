@@ -27,36 +27,38 @@ func main() {
 	router.Use(gin.Recovery(), gin.Logger())
 	router.RedirectTrailingSlash = false
 
+	api := router.Group("/api")
+
 	// cors setup
-	router.Use(cors.New(cors.Config{
+	api.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}))
 
-	router.OPTIONS("/*path", func(c *gin.Context) {
+	api.OPTIONS("/*path", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
 
 	// Simple health check route
-	router.GET("/", func(c *gin.Context) {
+	api.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "API is up and running"})
 	})
 
 	// auth
-	router.POST("/login", handlers.Login)
-	router.POST("/refresh", handlers.RefreshToken)
+	api.POST("/login", handlers.Login)
+	api.POST("/refresh", handlers.RefreshToken)
 
 	// recipes
-	router.GET("/recipes", handlers.GetAllRecipes(db.DB))
-	router.GET("/recipes/:id", handlers.GetRecipeByID(db.DB))
-	router.POST("/recipes", handlers.CreateRecipe(db.DB))
-	router.PUT("/recipes/:id", handlers.UpdateRecipe(db.DB))
-	router.DELETE("/recipes/:id", handlers.DeleteRecipe(db.DB))
+	api.GET("/recipes", handlers.GetAllRecipes(db.DB))
+	api.GET("/recipes/:id", handlers.GetRecipeByID(db.DB))
+	api.POST("/recipes", handlers.CreateRecipe(db.DB))
+	api.PUT("/recipes/:id", handlers.UpdateRecipe(db.DB))
+	api.DELETE("/recipes/:id", handlers.DeleteRecipe(db.DB))
 
 	// menu
-	menu := router.Group("/menu")
+	menu := api.Group("/menu")
 	menu.Use(middleware.AuthRequired())
 	{
 		menu.GET("", handlers.GetMenuEntries(db.DB))  // handles /menu
@@ -67,10 +69,10 @@ func main() {
 	}
 
 	// shopping list
-	router.GET("/shopping-list", handlers.GetShoppingList(db.DB))
+	api.GET("/shopping-list", handlers.GetShoppingList(db.DB))
 
 	// ingredient
-	router.GET("/ingredients", handlers.GetIngredients(db.DB))
+	api.GET("/ingredients", handlers.GetIngredients(db.DB))
 
 	fmt.Printf("Starting server on port %s...\n", port)
 	if err := router.Run(":" + port); err != nil {
