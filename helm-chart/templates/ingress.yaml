@@ -4,7 +4,6 @@ metadata:
   name: {{ include "recipe-app.fullname" . }}
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: {{ .Values.ingress.issuerName }}
 spec:
@@ -17,7 +16,7 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /backend(/|$)(.*)
+          - path: /api(/|$)(.*)
             pathType: Prefix
             backend:
               service:

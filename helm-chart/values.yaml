@@ -9,7 +9,7 @@ frontend:
   replicaCount: 1
   env:
     - name: VITE_API_URL
-      value: https://kulen.mithrandir.calic.cloud/backend
+      value: https://kulen.mithrandir.calic.cloud/api
 
 backend:
   imagePullSecrets:
