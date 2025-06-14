@@ -136,7 +136,7 @@ func CreateRecipe(db *gorm.DB) gin.HandlerFunc {
 			db.Create(&models.RecipeStep{
 				RecipeID: recipe.ID,
 				Number:   i + 1,
-				Title:    strings.TrimSpace(step.Text),
+				Title:    strings.TrimSpace(step.Title),
 				Text:     strings.TrimSpace(step.Text),
 			})
 		}
