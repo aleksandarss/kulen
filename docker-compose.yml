@@ -30,10 +30,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL_ARG: http://localhost:8080/api
     ports:
       - "8081:80"  # Nginx serves on port 80 inside container
     environment:
-      - VITE_API_URL=http://backend:8080
+      - VITE_API_URL=http://backend:8080/api
     depends_on:
       - backend
 

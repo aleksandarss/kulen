@@ -7,7 +7,8 @@ RUN npm install
 
 COPY . .
 
-ENV VITE_API_URL=https://kulen.mithrandir.calic.cloud/api
+ARG VITE_API_URL_ARG="https://kulen.mithrandir.calic.cloud/api"
+ENV VITE_API_URL=${VITE_API_URL_ARG}
 
 RUN npm run build
 
