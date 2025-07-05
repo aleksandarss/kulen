@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue'
+import { ref, watch, defineEmits, defineProps, onMounted } from 'vue'
 import api from '../api'
 import IngredientInput from './IngredientInput.vue'
 
@@ -162,6 +162,15 @@ watch(props, () => {
   ingredients.value = [{ name: '', amount: '', unit: '' }]
   selectedTags.value = []
   steps.value = [{ title: '', text: '' }]
+})
+
+onMounted(async () => {
+  try {
+    const res = await api.get('/tags')
+    allTags.value = res.data
+  } catch (err) {
+    console.error('Failed to load tags:', err)
+  }
 })
 
 function addIngredient() {
