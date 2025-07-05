@@ -102,18 +102,8 @@ async function fetchRecipes() {
   }
 }
 
-async function handleCreate(data: { title: string; instructions: string }) {
-  try {
-    await api.post('/recipes', {
-      title: data.title,
-      instructions: data.instructions,
-    })
-    await fetchRecipes()
-  } catch (err) {
-    console.error('Error creating recipe:', err)
-  } finally {
-    showModal.value = false
-  }
+async function handleCreate() {
+  await fetchRecipes()
 }
 
 const editingRecipe = ref(null)
