@@ -1,6 +1,15 @@
 <template>
   <div class="p-6">
-    <h1 class="text-3xl font-bold text-primary mb-6 text-center">{{ recipe.Title }}</h1>  
+    <h1 class="text-3xl font-bold text-primary mb-4 text-center">{{ recipe.Title }}</h1>
+    <div v-if="recipe.Tags && recipe.Tags.length" class="flex flex-wrap gap-2 justify-center mb-6">
+      <span
+        v-for="tag in recipe.Tags"
+        :key="tag.ID"
+        class="bg-secondary text-primary text-xs px-2 py-1 rounded"
+      >
+        {{ tag.Tag?.Name }}
+      </span>
+    </div>
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Left Sidebar (Ingredients + Portions) -->
         <div class="lg:w-1/4 w-full bg-white border border-secondary rounded-xl p-4 shadow">
