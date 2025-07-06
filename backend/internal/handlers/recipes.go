@@ -24,13 +24,21 @@ func GetAllRecipes(db *gorm.DB) gin.HandlerFunc {
 		if tag := c.Query("tag"); tag != "" {
 			query = query.Joins("JOIN recipe_tags ON recipe_tags.recipe_id = recipes.id").
 				Joins("JOIN tags ON tags.id = recipe_tags.tag_id").
-				Where("tags.name = ?", tag)
+				Where("LOWER(tags.name) LIKE ?", "%"+strings.ToLower(tag)+"%")
 		}
 
 		if ingredient := c.Query("ingredient"); ingredient != "" {
 			query = query.Joins("JOIN recipe_ingredients ON recipe_ingredients.recipe_id = recipes.id").
 				Joins("JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id").
 				Where("ingredients.name = ?", ingredient)
+		}
+
+		if search := c.Query("search"); search != "" {
+			like := "%" + strings.ToLower(search) + "%"
+			query = query.Joins("LEFT JOIN recipe_tags rt ON rt.recipe_id = recipes.id").
+				Joins("LEFT JOIN tags t ON t.id = rt.tag_id").
+				Where("LOWER(recipes.title) LIKE ? OR LOWER(t.name) LIKE ?", like, like).
+				Group("recipes.id")
 		}
 
 		if err := query.Find(&recipes).Error; err != nil {
