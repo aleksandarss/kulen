@@ -75,7 +75,7 @@
           <!-- Tags -->
           <div class="mb-4">
             <label class="block text-sm text-primary mb-2">Tags</label>
-            <div v-if="allTags.length" class="flex flex-wrap gap-3">
+            <div v-if="allTags.length" class="flex flex-wrap gap-3 mb-2">
               <label
                 v-for="tag in allTags"
                 :key="tag.id"
@@ -90,7 +90,20 @@
                 {{ tag.name }}
               </label>
             </div>
-            <div v-else class="text-sm text-secondary">No tags found.</div>
+            <div v-else class="text-sm text-secondary mb-2">No tags found.</div>
+
+            <div class="flex items-center gap-2">
+              <input
+                v-model="newTag"
+                @keydown.enter.prevent="addNewTag"
+                type="text"
+                placeholder="New tag"
+                class="border border-secondary rounded px-2 py-1 text-sm flex-1"
+              />
+              <button type="button" @click="addNewTag" class="text-sm text-accent hover:underline">
+                Add Tag
+              </button>
+            </div>
           </div>
 
           <!-- Steps -->
@@ -158,6 +171,7 @@ const ingredients = ref<any[]>([])
 const steps = ref<any[]>([])
 const selectedTags = ref<string[]>([])
 const allTags = ref<{ id: number; name: string }[]>([])
+const newTag = ref('')
 
 watch(
   () => props.recipe,
@@ -210,14 +224,35 @@ async function submit() {
   }
 }
 
-onMounted(async () => {
+async function fetchTags() {
   try {
     const res = await api.get('/tags')
     allTags.value = res.data
   } catch (err) {
     console.error('Failed to load tags:', err)
   }
-})
+}
+
+onMounted(fetchTags)
+
+watch(
+  () => props.recipe,
+  (val) => {
+    if (val) fetchTags()
+  }
+)
+
+function addNewTag() {
+  const tag = newTag.value.trim()
+  if (!tag) return
+  if (!selectedTags.value.includes(tag)) {
+    selectedTags.value.push(tag)
+  }
+  if (!allTags.value.some(t => t.name === tag)) {
+    allTags.value.push({ id: 0, name: tag })
+  }
+  newTag.value = ''
+}
 </script>
 
 <style scoped>

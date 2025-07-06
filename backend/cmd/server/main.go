@@ -75,6 +75,7 @@ func main() {
 	api.GET("/ingredients", handlers.GetIngredients(db.DB))
 	// tags
 	api.GET("/tags", handlers.GetTags(db.DB))
+	api.POST("/tags", handlers.CreateTag(db.DB))
 
 	fmt.Printf("Starting server on port %s...\n", port)
 	if err := router.Run(":" + port); err != nil {
