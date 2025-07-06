@@ -37,6 +37,7 @@ func setupTestDB() *gorm.DB {
 		&models.Tag{},
 		&models.RecipeTag{},
 		&models.MenuEntry{},
+		&models.RecipeStep{},
 	)
 	models.Seed(db)
 	return db
@@ -53,6 +54,37 @@ func TestGetAllRecipes(t *testing.T) {
 	if resp.Code != http.StatusOK {
 		t.Fatalf("expected 200 OK, got %d", resp.Code)
 	}
+}
+
+func TestSearchRecipesByTitle(t *testing.T) {
+	db := setupTestDB()
+	r := setupTestRouter(db)
+
+	req, _ := http.NewRequest("GET", "/recipes?search=panc", nil)
+	resp := httptest.NewRecorder()
+	r.ServeHTTP(resp, req)
+
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var recipes []models.Recipe
+	json.NewDecoder(resp.Body).Decode(&recipes)
+	assert.Equal(t, 1, len(recipes))
+	assert.Equal(t, "Simple Pancakes", recipes[0].Title)
+}
+
+func TestSearchRecipesByTag(t *testing.T) {
+	db := setupTestDB()
+	r := setupTestRouter(db)
+
+	req, _ := http.NewRequest("GET", "/recipes?search=vega", nil)
+	resp := httptest.NewRecorder()
+	r.ServeHTTP(resp, req)
+
+	assert.Equal(t, http.StatusOK, resp.Code)
+
+	var recipes []models.Recipe
+	json.NewDecoder(resp.Body).Decode(&recipes)
+	assert.GreaterOrEqual(t, len(recipes), 1)
 }
 
 func TestCreateRecipe(t *testing.T) {

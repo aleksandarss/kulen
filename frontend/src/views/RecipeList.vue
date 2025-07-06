@@ -1,9 +1,5 @@
 <template>
-  <AddRecipeModal
-    :visible="showModal"
-    @close="showModal = false"
-    @submit="handleCreate"
-  />
+  <AddRecipeModal :visible="showModal" @close="showModal = false" @submit="handleCreate" />
 
   <EditRecipeModal
     v-if="editingRecipe"
@@ -20,6 +16,22 @@
         @click="showModal = true"
       >
         + Add Recipe
+      </button>
+    </div>
+
+    <div class="flex gap-2 mb-4">
+      <input
+        v-model="search"
+        @keydown.enter.prevent="loadRecipes"
+        type="text"
+        placeholder="Search by name or tag"
+        class="flex-1 border border-secondary rounded px-3 py-2"
+      />
+      <button
+        class="bg-accent text-white px-4 py-2 rounded hover:bg-primary transition-colors"
+        @click="loadRecipes"
+      >
+        Search
       </button>
     </div>
 
@@ -66,10 +78,7 @@
           </span>
         </div>
 
-        <button
-          class="text-sm text-accent hover:underline mt-2"
-          @click="startEdit(recipe)"
-        >
+        <button class="text-sm text-accent hover:underline mt-2" @click="startEdit(recipe)">
           Edit
         </button>
       </div>
@@ -86,6 +95,7 @@ import EditRecipeModal from '../components/EditRecipeModal.vue'
 const recipes = ref([])
 const loading = ref(true)
 const showModal = ref(false)
+const search = ref('')
 
 onMounted(async () => {
   await fetchRecipes()
@@ -93,7 +103,9 @@ onMounted(async () => {
 
 async function fetchRecipes() {
   try {
-    const res = await api.get('/recipes')
+    const params: any = {}
+    if (search.value.trim()) params.search = search.value
+    const res = await api.get('/recipes', { params })
     recipes.value = res.data
   } catch (err) {
     console.error('Error loading recipes:', err)
@@ -102,8 +114,13 @@ async function fetchRecipes() {
   }
 }
 
-async function handleCreate() {
+async function loadRecipes() {
+  loading.value = true
   await fetchRecipes()
+}
+
+async function handleCreate() {
+  await loadRecipes()
 }
 
 const editingRecipe = ref(null)
