@@ -73,8 +73,6 @@ func main() {
 
 	// ingredient
 	api.GET("/ingredients", handlers.GetIngredients(db.DB))
-	// tags
-	api.GET("/tags", handlers.GetTags(db.DB))
 
 	fmt.Printf("Starting server on port %s...\n", port)
 	if err := router.Run(":" + port); err != nil {
