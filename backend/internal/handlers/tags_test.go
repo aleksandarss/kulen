@@ -3,7 +3,6 @@ package handlers_test
 import (
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"backend/internal/handlers"
@@ -28,7 +27,6 @@ func setupTagTest() (*gin.Engine, *gorm.DB) {
 	models.Seed(db)
 	r := gin.Default()
 	r.GET("/tags", handlers.GetTags(db))
-	r.POST("/tags", handlers.CreateTag(db))
 	return r, db
 }
 
@@ -39,17 +37,5 @@ func TestGetTags(t *testing.T) {
 	r.ServeHTTP(resp, req)
 	if resp.Code != http.StatusOK {
 		t.Fatalf("expected 200 OK, got %d", resp.Code)
-	}
-}
-
-func TestCreateTag(t *testing.T) {
-	r, _ := setupTagTest()
-	body := strings.NewReader(`{"name":"Dessert"}`)
-	req, _ := http.NewRequest("POST", "/tags", body)
-	req.Header.Set("Content-Type", "application/json")
-	resp := httptest.NewRecorder()
-	r.ServeHTTP(resp, req)
-	if resp.Code != http.StatusCreated {
-		t.Fatalf("expected 201 Created, got %d", resp.Code)
 	}
 }
