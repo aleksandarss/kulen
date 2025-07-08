@@ -56,7 +56,7 @@
           </ul>
         </div>
 
-        <div v-if="recipe.Tags?.length" class="mt-3">
+        <div v-if="recipe.Tags?.length">
           <span
             v-for="tag in recipe.Tags"
             :key="tag.ID"
