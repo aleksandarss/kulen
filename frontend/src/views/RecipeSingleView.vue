@@ -27,7 +27,7 @@
 
         <div class="space-y-2">
             <div
-                v-for="(ingredient, index) in recipe.Ingredients"
+                v-for="(ingredient, index) in scaledIngredients"
                 :key="index"
                 class="flex items-center gap-2"
             >
@@ -45,7 +45,7 @@
                     : 'text-primary'
                 ]"
                 >
-                {{ ingredient.Amount }} {{ ingredient.Unit }} {{ ingredient.Ingredient.Name }}
+                {{ ingredient.scaledAmount }} {{ ingredient.Unit }} {{ ingredient.Ingredient.Name }}
                 </span>
             </div>
             <router-link
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api'
 
@@ -96,6 +96,20 @@ onMounted(async () => {
 })
 
 const checkedIngredients = ref<number[]>([])
+
+function scaleAmount(amount: string): string {
+  const num = parseFloat(amount)
+  if (isNaN(num)) return amount
+  const scaled = num * portions.value
+  return Number.isInteger(scaled) ? scaled.toString() : scaled.toFixed(2)
+}
+
+const scaledIngredients = computed(() =>
+  recipe.value.Ingredients?.map((ing: any) => ({
+    ...ing,
+    scaledAmount: scaleAmount(ing.Amount)
+  })) || []
+)
 
 </script>
 
