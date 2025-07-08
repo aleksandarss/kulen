@@ -227,7 +227,7 @@ async function submit() {
 async function fetchTags() {
   try {
     const res = await api.get('/tags')
-    allTags.value = res.data.map((t: any) => ({ id: t.ID, name: t.Name }))
+    allTags.value = res.data
   } catch (err) {
     console.error('Failed to load tags:', err)
   }
