@@ -9,29 +9,28 @@
   />
 
   <div class="bg-background min-h-screen p-4">
-    <div class="flex justify-between items-center mb-6 pb-2 border-b border-secondary">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-6 pb-2 border-b border-secondary">
       <h1 class="text-xl font-semibold text-primary">Recipes</h1>
+      <div class="flex gap-2 flex-1 sm:flex-none">
+        <input
+          v-model="search"
+          @keydown.enter.prevent="loadRecipes"
+          type="text"
+          placeholder="Search by name or tag"
+          class="flex-1 border border-secondary rounded px-3 py-2"
+        />
+        <button
+          class="bg-accent text-white px-4 py-2 rounded hover:bg-primary transition-colors"
+          @click="loadRecipes"
+        >
+          Search
+        </button>
+      </div>
       <button
         class="bg-accent text-white px-4 py-2 rounded hover:bg-primary transition-colors"
         @click="showModal = true"
       >
         + Add Recipe
-      </button>
-    </div>
-
-    <div class="flex gap-2 mb-4">
-      <input
-        v-model="search"
-        @keydown.enter.prevent="loadRecipes"
-        type="text"
-        placeholder="Search by name or tag"
-        class="flex-1 border border-secondary rounded px-3 py-2"
-      />
-      <button
-        class="bg-accent text-white px-4 py-2 rounded hover:bg-primary transition-colors"
-        @click="loadRecipes"
-      >
-        Search
       </button>
     </div>
 
