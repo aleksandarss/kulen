@@ -20,6 +20,7 @@
             <input
             v-model.number="portions"
             type="number"
+            step="1"
             min="1"
             class="w-full border border-secondary rounded px-2 py-1"
             />
@@ -100,14 +101,19 @@ const checkedIngredients = ref<number[]>([])
 watch(portions, (val) => {
   if (!val || val < 1) {
     portions.value = 1
+  } else {
+    portions.value = Math.round(val)
   }
 })
 
 function scaleAmount(amount: string): string {
-  const num = parseFloat(amount)
+  // support commas as decimal separators
+  const num = parseFloat(amount.replace(',', '.'))
   if (isNaN(num)) return amount
   const scaled = num * portions.value
-  return Number.isInteger(scaled) ? scaled.toString() : scaled.toFixed(2)
+  const result = Number.isInteger(scaled) ? scaled.toString() : scaled.toFixed(2)
+  // display using comma for decimals
+  return result.replace('.', ',')
 }
 
 const scaledIngredients = computed(() =>
