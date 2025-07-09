@@ -18,7 +18,7 @@
         <div class="mb-4">
             <label class="block text-sm font-medium text-primary mb-1">Portions</label>
             <input
-            v-model="portions"
+            v-model.number="portions"
             type="number"
             min="1"
             class="w-full border border-secondary rounded px-2 py-1"
@@ -59,7 +59,7 @@
 
         <!-- Main Content (Steps) -->
         <div class="flex-1 bg-white border border-secondary rounded-xl p-4 shadow">
-        <h1 class="text-2xl font-bold text-primary mb-6">{{ recipe.title }}</h1>
+        <h1 class="text-2xl font-bold text-primary mb-6">{{ recipe.Title }}</h1>
 
         <div v-if="recipe.Steps && recipe.Steps.length" class="space-y-6">
             <div
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../api'
 
@@ -96,6 +96,12 @@ onMounted(async () => {
 })
 
 const checkedIngredients = ref<number[]>([])
+
+watch(portions, (val) => {
+  if (!val || val < 1) {
+    portions.value = 1
+  }
+})
 
 function scaleAmount(amount: string): string {
   const num = parseFloat(amount)
