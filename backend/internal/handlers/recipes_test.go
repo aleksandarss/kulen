@@ -119,14 +119,14 @@ func TestCreateRecipe(t *testing.T) {
 	// Check ingredients were created
 	var tofu models.Ingredient
 	var soySauce models.Ingredient
-	assert.NoError(t, db.Where("name = ?", "tofu").First(&tofu).Error)
-	assert.NoError(t, db.Where("name = ?", "soy sauce").First(&soySauce).Error)
+	assert.NoError(t, db.Where("name = ?", "Tofu").First(&tofu).Error)
+	assert.NoError(t, db.Where("name = ?", "Soy Sauce").First(&soySauce).Error)
 
 	// Check tags were created
 	var vegan models.Tag
 	var dinner models.Tag
-	assert.NoError(t, db.Where("name = ?", "vegan").First(&vegan).Error)
-	assert.NoError(t, db.Where("name = ?", "dinner").First(&dinner).Error)
+	assert.NoError(t, db.Where("name = ?", "Vegan").First(&vegan).Error)
+	assert.NoError(t, db.Where("name = ?", "Dinner").First(&dinner).Error)
 
 	// Check linking in recipe_ingredients
 	var links []models.RecipeIngredient
