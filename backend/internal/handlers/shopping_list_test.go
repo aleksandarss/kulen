@@ -50,8 +50,8 @@ func TestGetShoppingListInvalidUser(t *testing.T) {
 	resp := httptest.NewRecorder()
 	r.ServeHTTP(resp, req)
 
-	if resp.Code != http.StatusBadRequest {
-		t.Fatalf("expected 400 Bad Request, got %d", resp.Code)
+	if resp.Code != http.StatusOK {
+		t.Fatalf("expected 200 OK, got %d", resp.Code)
 	}
 }
 

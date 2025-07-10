@@ -26,10 +26,15 @@ func setupTestMenuEnv() (*gin.Engine, *gorm.DB) {
 		&models.Tag{},
 		&models.RecipeTag{},
 		&models.MenuEntry{},
+		&models.MenuEntryExtra{},
 	)
 	models.Seed(db)
 
 	r := gin.Default()
+	r.Use(func(c *gin.Context) {
+		c.Set("userID", uint(1))
+		c.Next()
+	})
 	r.GET("/menu", handlers.GetMenuEntries(db))
 	r.POST("/menu", handlers.CreateMenuEntry(db))
 	r.DELETE("/menu/:id", handlers.DeleteMenuEntry(db))
