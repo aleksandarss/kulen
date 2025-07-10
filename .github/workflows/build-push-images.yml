@@ -53,7 +53,7 @@ jobs:
       - name: Run frontend tests
         run: |
           cd frontend
-          npm test -- --coverage
+          npm test
 
       - name: Check frontend coverage
         run: |

@@ -4,7 +4,7 @@ export default defineConfig({
     environment: 'jsdom',
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json'],
+      reporter: ['text', 'json', 'json-summary'],
       include: ['src/stores/**']
     }
   }
