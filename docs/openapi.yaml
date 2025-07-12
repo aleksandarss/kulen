@@ -1,0 +1,464 @@
+openapi: 3.0.1
+info:
+  title: Kulen API
+  version: 1.0.0
+  description: |-
+    This OpenAPI specification documents the available HTTP endpoints
+    of the Kulen backend.
+servers:
+  - url: /api
+paths:
+  /:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API is up and running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /login:
+    post:
+      summary: Login and obtain tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Tokens returned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+  /refresh:
+    post:
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: New access token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+  /recipes:
+    get:
+      summary: List recipes
+      parameters:
+        - in: query
+          name: tag
+          schema:
+            type: string
+          description: Filter by tag name
+        - in: query
+          name: ingredient
+          schema:
+            type: string
+          description: Filter by ingredient name
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by title or tag
+      responses:
+        '200':
+          description: Array of recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recipe'
+    post:
+      summary: Create a recipe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                instructions:
+                  type: string
+                created_by_id:
+                  type: integer
+                ingredients:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/IngredientInput'
+                tags:
+                  type: array
+                  items:
+                    type: string
+                steps:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StepInput'
+      responses:
+        '201':
+          description: Recipe created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+  /recipes/{id}:
+    get:
+      summary: Get recipe by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        '404':
+          description: Recipe not found
+    put:
+      summary: Update recipe
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRecipeInput'
+      responses:
+        '200':
+          description: Recipe updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      summary: Delete recipe
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+  /menu:
+    get:
+      summary: List menu entries
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Array of menu entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MenuEntry'
+    post:
+      summary: Create menu entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuEntryInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuEntry'
+  /menu/{id}:
+    delete:
+      summary: Delete menu entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+  /shopping-list:
+    get:
+      summary: Get shopping list for a user
+      parameters:
+        - in: query
+          name: user_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Shopping list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingItem'
+  /ingredients:
+    get:
+      summary: Query ingredients
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of ingredients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ingredient'
+  /tags:
+    get:
+      summary: List tags
+      responses:
+        '200':
+          description: Array of tags
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+    post:
+      summary: Create tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Ingredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    RecipeIngredient:
+      type: object
+      properties:
+        id:
+          type: integer
+        recipe_id:
+          type: integer
+        ingredient_id:
+          type: integer
+        amount:
+          type: string
+        unit:
+          type: string
+        ingredient:
+          $ref: '#/components/schemas/Ingredient'
+    RecipeStep:
+      type: object
+      properties:
+        id:
+          type: integer
+        recipe_id:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        text:
+          type: string
+    RecipeTag:
+      type: object
+      properties:
+        id:
+          type: integer
+        recipe_id:
+          type: integer
+        tag_id:
+          type: integer
+        tag:
+          $ref: '#/components/schemas/Tag'
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        instructions:
+          type: string
+        created_by_id:
+          type: integer
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeIngredient'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeTag'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeStep'
+    MenuEntryExtra:
+      type: object
+      properties:
+        id:
+          type: integer
+        menu_entry_id:
+          type: integer
+        name:
+          type: string
+    MenuEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        recipe_id:
+          type: integer
+        day:
+          type: string
+        meal_type:
+          type: string
+        recipe:
+          $ref: '#/components/schemas/Recipe'
+        extras:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuEntryExtra'
+    ShoppingItem:
+      type: object
+      properties:
+        name:
+          type: string
+        unit:
+          type: string
+        amount:
+          type: number
+    IngredientInput:
+      type: object
+      properties:
+        name:
+          type: string
+        amount:
+          type: string
+        unit:
+          type: string
+    StepInput:
+      type: object
+      properties:
+        text:
+          type: string
+        title:
+          type: string
+    MenuEntryInput:
+      type: object
+      properties:
+        recipe_id:
+          type: integer
+        day:
+          type: string
+        meal_type:
+          type: string
+        extras:
+          type: array
+          items:
+            type: string
+    UpdateRecipeInput:
+      type: object
+      properties:
+        title:
+          type: string
+        instructions:
+          type: string
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientInput'
+        tags:
+          type: array
+          items:
+            type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepInput'
