@@ -60,6 +60,11 @@ The application will then be reachable at `http://localhost:8081` while the API 
 - Backend: `go test ./...`
 - Frontend: `npm test`
 
+## API Documentation
+
+The HTTP API is documented using an OpenAPI 3 specification located at [`docs/openapi.yaml`](docs/openapi.yaml).
+You can visualize it with tools like [Swagger UI](https://swagger.io/tools/swagger-ui/).
+
 ---
 
 ## Docker Images
